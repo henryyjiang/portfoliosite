@@ -1,7 +1,6 @@
+// visualizer
 const frameCount = 173;
-let currentFrame = 0;
-const fps = 24;
-const interval = 1000 / fps;
+let currentFrame = 1;
 const container = document.getElementById("visualizer");
 
 const frames = [];
@@ -11,31 +10,15 @@ for (let i = 1; i <= frameCount; i++) {
     frames.push(img);
 }
 
-let lastTimestamp = 0;
-
-function playSequence(timestamp) {
-  const delta = timestamp - lastTimestamp;
-  
-  if (delta >= interval) {
-    container.style.backgroundImage = `url(${frames[currentFrame].src})`;
-    currentFrame = (currentFrame + 1) % frameCount;
-    lastTimestamp = timestamp - (delta % interval);
-  }
-  
-  requestAnimationFrame(playSequence);
+function playSequence() {
+    setInterval(() => {
+    container.style.backgroundImage = `url(${frames[currentFrame - 1].src})`;
+    currentFrame++;
+    if (currentFrame > frameCount) {
+        currentFrame = 1;
+    }
+    }, 36);
 }
-
-Promise.all(frames.map(img => 
-  img.complete ? Promise.resolve() : new Promise(resolve => img.onload = resolve)
-)).then(() => requestAnimationFrame(playSequence));
-
-document.addEventListener("visibilitychange", () => {
-  if (!document.hidden) {
-    lastTimestamp = performance.now();
-  }
-});
-
-
 
 window.addEventListener("load", playSequence);
 
